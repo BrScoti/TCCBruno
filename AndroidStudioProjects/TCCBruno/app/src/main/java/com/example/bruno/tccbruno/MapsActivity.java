@@ -296,7 +296,7 @@ public class MapsActivity extends AppCompatActivity
                 getNearbyPlacesData.execute(dataTransfer);
                 Toast.makeText(MapsActivity.this, "Mostrando igrejas próximas!", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MapsActivity.this, "Falha ao receber sua localização!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, "Não foi possível receber seu localização!", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(MapsActivity.this, "Você está desconectado impossível localizar igrejas!", Toast.LENGTH_LONG).show();
