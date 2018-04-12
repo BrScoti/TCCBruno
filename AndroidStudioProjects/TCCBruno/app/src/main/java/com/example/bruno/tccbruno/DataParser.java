@@ -20,6 +20,7 @@ public class DataParser {
         String latitude="";
         String longitude="";
         String reference="";
+        String id="";
         try {
         if(!googlePlaceJson.isNull("name")){
 
@@ -32,6 +33,9 @@ public class DataParser {
             latitude= googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude= googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lng");
             reference= googlePlaceJson.getString("reference");
+            id=googlePlaceJson.getString("place_id");
+
+            googlePlacesMap.put("place_id",id);
             googlePlacesMap.put("place_name",placeName);
             googlePlacesMap.put("vicinity",vicinity);
             googlePlacesMap.put("lat",latitude);

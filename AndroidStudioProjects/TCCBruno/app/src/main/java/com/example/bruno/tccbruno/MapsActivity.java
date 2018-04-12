@@ -2,9 +2,11 @@ package com.example.bruno.tccbruno;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,9 +15,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -32,6 +36,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -39,11 +44,11 @@ import com.google.android.gms.tasks.Task;
  * An activity that displays a map showing the place at the device's current location.
  */
 public class MapsActivity extends AppCompatActivity
-        implements OnMapReadyCallback {
-
+        implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+    //final ViewGroup transitionsContainer = (ViewGroup) findViewById(R.id.Layout);
     private Animator anim;
     private SeekBar seekBar;
-    private TextView textView;
+    private TextView textViewRaio,textViewDetails;
     private Button btn;
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
@@ -51,8 +56,9 @@ public class MapsActivity extends AppCompatActivity
     private double latitude;
     private double longitude;
     private int progress=0;
+    private Button btnTest;
     private CameraPosition mCameraPosition;
-    private CardView cardView;
+    private CardView cardViewRaio, cardViewDetails;
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
@@ -104,33 +110,6 @@ public class MapsActivity extends AppCompatActivity
         Animator anim =
                 ViewAnimationUtils.createCircularReveal(cardView, cx, cy, 0, finalRadius);
             */
-
-         textView.setText("  Distância de: " + (seekBar.getProgress()+1) + "/" + seekBar.getMax() +" KM");
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
-                progress = progresValue;
-                textView.setText("  Distância de: " + (progress+1) + "/" + seekBar.getMax() +" KM");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                textView.setText("  Distância de: " + (progress+1) + "/" + seekBar.getMax() +" KM");
-                getDeviceLocation();
-            }
-        });
-
-
-
-
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
@@ -167,6 +146,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnInfoWindowClickListener(this);
 
         // Prompt the user for permission.
         getLocationPermission();
@@ -176,6 +156,61 @@ public class MapsActivity extends AppCompatActivity
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+
+
+        textViewRaio.setText("  Distância de: " + (seekBar.getProgress()+1) + "/" + seekBar.getMax() +" KM");
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progresValue, boolean fromUser) {
+                progress = progresValue;
+                textViewRaio.setText("  Distância de: " + (progress+1) + "/" + seekBar.getMax() +" KM");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                textViewRaio.setText("  Distância de: " + (progress+1) + "/" + seekBar.getMax() +" KM");
+                getDeviceLocation();
+            }
+        });
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                //TransitionManager.beginDelayedTransition(transitionsContainer);
+                cardViewDetails.setVisibility(View.VISIBLE);
+                textViewDetails.setText("");
+                String o =(String) marker.getTag();
+                String quebra1[] = o.split(";");
+                textViewDetails.setText(quebra1[0]+"\n \n"+quebra1[1]);
+                return true;
+
+
+            }
+
+        });
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                cardViewDetails.setVisibility(View.INVISIBLE);
+
+            }
+        });
+        mMap.setOnInfoWindowCloseListener(new GoogleMap.OnInfoWindowCloseListener() {
+            @Override
+            public void onInfoWindowClose(Marker marker) {
+                cardViewDetails.setVisibility(View.INVISIBLE);
+
+            }
+        });
         //Mostrar as igrejas próximas.
 
     }
@@ -295,8 +330,10 @@ public class MapsActivity extends AppCompatActivity
                 GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
                 getNearbyPlacesData.execute(dataTransfer);
                 Toast.makeText(MapsActivity.this, "Mostrando igrejas próximas!", Toast.LENGTH_LONG).show();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude)));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
             } else {
-                Toast.makeText(MapsActivity.this, "Não foi possível receber seu localização!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, "Falha ao receber sua localização!", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(MapsActivity.this, "Você está desconectado impossível localizar igrejas!", Toast.LENGTH_LONG).show();
@@ -344,13 +381,21 @@ public class MapsActivity extends AppCompatActivity
 
     private void initializeVariables() {
         seekBar = (SeekBar) findViewById(R.id.seekRaio);
-        textView = (TextView) findViewById(R.id.textView);
-        cardView=(CardView) findViewById(R.id.cardView);
-
-
+        textViewRaio = (TextView) findViewById(R.id.textViewRaio);
+        cardViewRaio=(CardView) findViewById(R.id.cardViewRaio);
+        cardViewDetails=(CardView) findViewById(R.id.cardViewDetails);
+        textViewDetails= (TextView) findViewById(R.id.textViewDetails);
 
     }
 
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        cardViewDetails.setVisibility(View.VISIBLE);
+        textViewDetails.setText("");
+        Object o = marker.getTag();
+        textViewDetails.setText((String) o);
+    }
 
 
 }

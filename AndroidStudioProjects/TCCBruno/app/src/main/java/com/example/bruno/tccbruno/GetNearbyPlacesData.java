@@ -1,6 +1,8 @@
 package com.example.bruno.tccbruno;
 
 import android.os.AsyncTask;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -19,6 +21,7 @@ public class GetNearbyPlacesData  extends AsyncTask<Object,String,String> {
     String googlePlacesData;
     GoogleMap nMap;
     String url;
+
     @Override
     protected String doInBackground(Object... objects) {
         nMap= (GoogleMap)objects[0];
@@ -47,13 +50,19 @@ public class GetNearbyPlacesData  extends AsyncTask<Object,String,String> {
             HashMap<String,String> googlePlace= nearbyPlaceList.get(i);
             String placeName= googlePlace.get("place_name");
             String vicinity= googlePlace.get("vicinity");
+            String placeId= googlePlace.get("place_id");
             double lat= Double.parseDouble(googlePlace.get("lat"));
             double lng= Double.parseDouble(googlePlace.get("lng"));
             LatLng latLng= new LatLng(lat,lng);
+            Object o;
+            o= placeName+";"+vicinity+";"+placeId;
+
+
             markerOptions.position(latLng);
-            markerOptions.title(placeName+":"+vicinity);
+            //markerOptions.title("");
+           //markerOptions.snippet("Clique para mais informações.");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            nMap.addMarker(markerOptions);
+            nMap.addMarker(markerOptions).setTag(o);
            // nMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
            // nMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }

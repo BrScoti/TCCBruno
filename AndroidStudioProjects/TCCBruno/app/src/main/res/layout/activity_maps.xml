@@ -1,8 +1,10 @@
-<RelativeLayout
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:columnCount="1"
     android:rowCount="1"
+    android:id="@+id/Layout"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
@@ -18,7 +20,7 @@
         android:layout_alignParentStart="true"
         tools:context="com.example.bruno.tccbruno.MapsActivity" />
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cardViewRaio"
         android:layout_width="204dp"
         android:layout_height="48dp"
         android:layout_alignParentStart="true"
@@ -36,12 +38,59 @@
             android:max="10" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textViewRaio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:text="" />
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardViewDetails"
+        android:layout_width="match_parent"
+        android:layout_height="233dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+
+        >
+
+
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:id="@+id/img"
+            android:layout_width="37dp"
+            android:layout_height="41dp"
+
+            android:src="@drawable/marker"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:layout_alignParentLeft="true"
+
+            />
+
+        <TextView
+            android:id="@+id/textViewDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/img"
+            android:layout_marginLeft="40dp"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/img"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="93.2dp"
+            android:background="?android:attr/listDivider"
+            android:visibility="visible" />
+
 
     </android.support.v7.widget.CardView>
 
